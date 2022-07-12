@@ -2,9 +2,9 @@ ARG PYTHON_VERSION
 ARG PYTHON_TAG
 FROM python:${PYTHON_VERSION}${PYTHON_TAG}
 
-RUN mkdir -p /src
-COPY src/ /src/
+RUN mkdir -p /app
+COPY app/ /app/
 
-RUN pip install -r /src/requirements.txt
+RUN pip install -r /app/requirements.txt
 
-WORKDIR /src
+WORKDIR /app

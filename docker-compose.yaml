@@ -11,8 +11,10 @@ services:
     container_name: $PROJECT_NAME
     environment:
       - PYTHONDONTWRITEBYTECODE=1
+      - ENVIRONMENT=$ENVIRONMENT
+      - TESTING=$TESTING
     volumes:
-      - ./src:/src
+      - ./app:/app
     ports:
       - "8000:8000"
-    entrypoint: ["uvicorn", "app.main:app", "--host", "0.0.0.0"]
+    entrypoint: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
