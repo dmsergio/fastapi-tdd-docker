@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PYTHON_VERSION=$PYTHON_VERSION
+        - PYTHON_TAG=$PYTHON_TAG
+    image: "${IMAGE_NAME}"
+    container_name: $PROJECT_NAME
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./src:/src
+    entrypoint:
+      tail
+      -f
+      /dev/null
