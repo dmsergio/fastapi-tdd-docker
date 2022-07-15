@@ -3,13 +3,25 @@ services:
   web:
     build:
       context: ./project
-      dockerfile: Dockerfile
+    command: uvicorn app.main:app --workers 1 --host 0.0.0.0 --reload
     environment:
-      - PYTHONDONTWRITEBYTECODE=1
       - ENVIRONMENT=dev
       - TESTING=1
+      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
     volumes:
-      - ./project/app:/usr/src/app
+      - ./project:/usr/src/app
     ports:
       - "8004:8000"
-    entrypoint: ["uvicorn", "main:app", "--workers", "1", "--host", "0.0.0.0", "--reload"]
+    depends_on:
+      - web-db
+
+  web-db:
+    build:
+      context: ./project/db
+      dockerfile: Dockerfile
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
