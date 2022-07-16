@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 from app.models.pydantic import SummaryPayloadSchema
 from app.models.tortoise import TextSummary
@@ -18,3 +18,7 @@ async def get(id: int) -> Union[dict, None]:
     if summary:
         return summary
     return None
+
+
+async def get_all() -> List:
+    return await TextSummary.all().values()

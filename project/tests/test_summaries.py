@@ -41,15 +41,13 @@ def test_create_summary_invalid_json(test_app_with_db):
 
 def test_read_summary(test_app_with_db):
     # Given
-    # test_app_with_db
-
-    # When
     response = test_app_with_db.post(
         "/summaries/",
         data=json.dumps({"url": "https://foo.bar"}),
     )
     summary_id = response.json()["id"]
 
+    # When
     response = test_app_with_db.get(f"/summaries/{summary_id}/")
 
     # Then
@@ -71,3 +69,22 @@ def test_read_summary_incorrect_id(test_app_with_db):
     # Then
     assert response.status_code == 404
     assert response.json()["detail"] == "Summary not found"
+
+
+def test_read_all_summaries(test_app_with_db):
+    # Given
+    response = test_app_with_db.post(
+        "/summaries/",
+        data=json.dumps({"url": "https://foo.bar"}),
+    )
+    summary_id = response.json()["id"]
+
+    # When
+    response = test_app_with_db.get("/summaries/")
+
+    # Then
+    response.status_code = 200
+    response_list = response.json()
+    assert len(
+        list(filter(lambda x: x["id"] == summary_id, response_list))
+    ) == 1
