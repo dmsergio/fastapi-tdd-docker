@@ -1,9 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
+from fastapi import HTTPException
 
 from app.api import crud
-from app.models.pydantic import SummaryPayloadSchema, SummaryResponseSchema
+from app.models.pydantic import SummaryPayloadSchema
+from app.models.pydantic import SummaryResponseSchema
 from app.models.tortoise import SummarySchema
 
 

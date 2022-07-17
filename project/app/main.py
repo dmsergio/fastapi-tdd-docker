@@ -1,9 +1,9 @@
 import logging
-from sys import prefix
 
 from fastapi import FastAPI
 
-from app.api import ping, summaries
+from app.api import ping
+from app.api import summaries
 from app.db import init_db
 
 

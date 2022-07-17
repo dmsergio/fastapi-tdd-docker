@@ -1,7 +1,5 @@
 import json
 
-import pytest
-
 
 def test_create_summary(test_app_with_db):
     # Given
@@ -31,11 +29,13 @@ def test_create_summary_invalid_json(test_app_with_db):
     # Then
     assert response.status_code == 422
     assert response.json() == {
-        "detail": [{
-            "loc": ["body", "url"],
-            "msg": "field required",
-            "type": "value_error.missing"
-        }]
+        "detail": [
+            {
+                "loc": ["body", "url"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            }
+        ]
     }
 
 
@@ -85,6 +85,6 @@ def test_read_all_summaries(test_app_with_db):
     # Then
     response.status_code = 200
     response_list = response.json()
-    assert len(
-        list(filter(lambda x: x["id"] == summary_id, response_list))
-    ) == 1
+    assert (
+        len(list(filter(lambda x: x["id"] == summary_id, response_list))) == 1
+    )

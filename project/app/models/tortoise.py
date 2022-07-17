@@ -1,4 +1,5 @@
-from tortoise import fields, models
+from tortoise import fields
+from tortoise import models
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 
