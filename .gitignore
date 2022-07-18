@@ -4,3 +4,6 @@
 
 # environment files
 .env
+
+# project files
+project/.coverage
