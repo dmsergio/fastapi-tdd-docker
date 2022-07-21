@@ -86,3 +86,34 @@ def test_read_all_summaries(test_app_with_db):
     response.status_code = 200
     res_list = response.json()
     assert len(list(filter(lambda x: x["id"] == summary_id, res_list))) == 1
+
+
+def test_remove_summary(test_app_with_db):
+    # Given
+    response = test_app_with_db.post(
+        "/summaries/",
+        data=json.dumps({"url": "https://foo.bar"}),
+    )
+    summary_id = response.json()["id"]
+
+    # When
+    response = test_app_with_db.delete(f"/summaries/{summary_id}/")
+
+    # Then
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": summary_id,
+        "url": "https://foo.bar",
+    }
+
+
+def test_remove_summary_incorrect_id(test_app_with_db):
+    # Given
+    # no previous state
+
+    # When
+    response = test_app_with_db.delete("/summaries/999/")
+
+    # Then
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Summary not found"
