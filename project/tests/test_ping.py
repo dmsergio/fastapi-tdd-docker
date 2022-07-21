@@ -10,5 +10,5 @@ def test_ping(test_app):
     assert response.json() == {
         "environment": "dev",
         "testing": True,
-        "ping": "pong!",
+        "ping": "pong",
     }
