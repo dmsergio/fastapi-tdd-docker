@@ -1,19 +1,22 @@
 import json
 
 
-def test_create_summary(test_app_with_db):
-    # Given
-    # test_app_with_db
-
-    # When
-    response = test_app_with_db.post(
+def create_summary(app) -> int:
+    response = app.post(
         "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
+        data=json.dumps(
+            {"url": "https://foo.bar"},
+        ),
     )
-
-    # Then
     assert response.status_code == 201
-    assert response.json()["url"] == "https://foo.bar"
+    response_dict = response.json()
+    assert response_dict["url"] == "https://foo.bar"
+
+    return response_dict["id"]
+
+
+def test_create_summary(test_app_with_db):
+    create_summary(test_app_with_db)
 
 
 def test_create_summary_invalid_json(test_app_with_db):
@@ -41,11 +44,7 @@ def test_create_summary_invalid_json(test_app_with_db):
 
 def test_read_summary(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.get(f"/summaries/{summary_id}/")
@@ -73,11 +72,7 @@ def test_read_summary_incorrect_id(test_app_with_db):
 
 def test_read_all_summaries(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.get("/summaries/")
@@ -90,11 +85,7 @@ def test_read_all_summaries(test_app_with_db):
 
 def test_remove_summary(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.delete(f"/summaries/{summary_id}/")
@@ -121,11 +112,7 @@ def test_remove_summary_incorrect_id(test_app_with_db):
 
 def test_update_summary(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.put(
@@ -169,11 +156,7 @@ def test_update_summary_incorrect_id(test_app_with_db):
 
 def test_update_summary_invalid_json(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.put(
@@ -204,11 +187,7 @@ def test_update_summary_invalid_json(test_app_with_db):
 
 def test_update_summary_invalid_keys(test_app_with_db):
     # Given
-    response = test_app_with_db.post(
-        "/summaries/",
-        data=json.dumps({"url": "https://foo.bar"}),
-    )
-    summary_id = response.json()["id"]
+    summary_id = create_summary(test_app_with_db)
 
     # When
     response = test_app_with_db.put(
