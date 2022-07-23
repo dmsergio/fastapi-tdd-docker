@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter
+from fastapi import Path
 from fastapi import HTTPException
 
 from app.api import crud
@@ -26,7 +27,7 @@ async def create_summary(
 
 
 @router.get("/{id}/", response_model=SummarySchema)
-async def read_summary(id: int) -> SummarySchema:
+async def read_summary(id: int = Path(..., gt=0)) -> SummarySchema:
     summary = await crud.get(id)
     if summary is None:
         raise HTTPException(status_code=404, detail="Summary not found")

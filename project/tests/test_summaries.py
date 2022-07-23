@@ -70,6 +70,27 @@ def test_read_summary_incorrect_id(test_app_with_db):
     assert response.json()["detail"] == "Summary not found"
 
 
+def test_read_summary_id_less_than_one(test_app_with_db):
+    # Given
+    # test_app_with_db
+
+    # When
+    response = test_app_with_db.get("/summaries/0/")
+
+    # Then
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "loc": ["path", "id"],
+                "msg": "ensure this value is greater than 0",
+                "type": "value_error.number.not_gt",
+                "ctx": {"limit_value": 0},
+            }
+        ]
+    }
+
+
 def test_read_all_summaries(test_app_with_db):
     # Given
     summary_id = create_summary(test_app_with_db)
