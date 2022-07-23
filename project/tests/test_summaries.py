@@ -244,20 +244,7 @@ def test_update_summary(test_app_with_db):
                     ],
                     "msg": "field required",
                     "type": "value_error.missing",
-                }
-            ],
-        ],
-        [
-            None,
-            {"url": "invalid://url", "summary": "updated!"},
-            422,
-            [
-                {
-                    "loc": ["body", "url"],
-                    "msg": "URL scheme not permitted",
-                    "type": "value_error.url.scheme",
-                    "ctx": {"allowed_schemes": ["https", "http"]},
-                }
+                },
             ],
         ],
     ],
@@ -279,3 +266,18 @@ def test_update_summary_invalid_data(
 
     assert response.status_code == status_code
     assert response.json()["detail"] == detail
+
+
+def test_update_summary_incorrect_url(test_app_with_db):
+    # Given
+    summary_id = create_summary(test_app_with_db)
+
+    # When
+    response = test_app_with_db.put(
+        f"/summaries/{summary_id}/",
+        data=json.dumps({"url": "invalid://url", "summary": "updated!"}),
+    )
+
+    # Then
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "URL scheme not permitted"
