@@ -2,8 +2,15 @@ import json
 
 import pytest
 
+from app.api import summaries
 
-def create_summary(app) -> int:
+
+def create_summary(app, monkeypatch) -> int:
+    def mock_generate_summary(summary_id, url):
+        return None
+
+    monkeypatch.setattr(summaries, "generate_summary", mock_generate_summary)
+
     response = app.post(
         "/summaries/",
         data=json.dumps(
@@ -17,8 +24,8 @@ def create_summary(app) -> int:
     return response_dict["id"]
 
 
-def test_create_summary(test_app_with_db):
-    create_summary(test_app_with_db)
+def test_create_summary(test_app_with_db, monkeypatch):
+    create_summary(test_app_with_db, monkeypatch)
 
 
 def test_create_summary_invalid_json(test_app_with_db):
@@ -59,9 +66,9 @@ def test_create_summary_invalid_url(test_app_with_db):
     assert response.json()["detail"][0]["msg"] == "URL scheme not permitted"
 
 
-def test_read_summary(test_app_with_db):
+def test_read_summary(test_app_with_db, monkeypatch):
     # Given
-    summary_id = create_summary(test_app_with_db)
+    summary_id = create_summary(test_app_with_db, monkeypatch)
 
     # When
     response = test_app_with_db.get(f"/summaries/{summary_id}/")
@@ -71,7 +78,7 @@ def test_read_summary(test_app_with_db):
     response_dict = response.json()
     assert response_dict["id"] == summary_id
     assert response_dict["url"] == "https://foo.bar"
-    assert response_dict["summary"]
+    assert response_dict["summary"] == ""
     assert response_dict["created_at"]
 
 
@@ -108,9 +115,9 @@ def test_read_summary_id_less_than_one(test_app_with_db):
     }
 
 
-def test_read_all_summaries(test_app_with_db):
+def test_read_all_summaries(test_app_with_db, monkeypatch):
     # Given
-    summary_id = create_summary(test_app_with_db)
+    summary_id = create_summary(test_app_with_db, monkeypatch)
 
     # When
     response = test_app_with_db.get("/summaries/")
@@ -121,9 +128,9 @@ def test_read_all_summaries(test_app_with_db):
     assert len(list(filter(lambda x: x["id"] == summary_id, res_list))) == 1
 
 
-def test_remove_summary(test_app_with_db):
+def test_remove_summary(test_app_with_db, monkeypatch):
     # Given
-    summary_id = create_summary(test_app_with_db)
+    summary_id = create_summary(test_app_with_db, monkeypatch)
 
     # When
     response = test_app_with_db.delete(f"/summaries/{summary_id}/")
@@ -169,9 +176,9 @@ def test_remove_summary_id_less_than_one(test_app_with_db):
     }
 
 
-def test_update_summary(test_app_with_db):
+def test_update_summary(test_app_with_db, monkeypatch):
     # Given
-    summary_id = create_summary(test_app_with_db)
+    summary_id = create_summary(test_app_with_db, monkeypatch)
 
     # When
     response = test_app_with_db.put(
@@ -251,13 +258,14 @@ def test_update_summary(test_app_with_db):
 )
 def test_update_summary_invalid_data(
     test_app_with_db,
+    monkeypatch,
     summary_id,
     payload,
     status_code,
     detail,
 ):
     if summary_id is None:
-        summary_id = create_summary(test_app_with_db)
+        summary_id = create_summary(test_app_with_db, monkeypatch)
 
     response = test_app_with_db.put(
         f"/summaries/{summary_id}/",
@@ -268,9 +276,9 @@ def test_update_summary_invalid_data(
     assert response.json()["detail"] == detail
 
 
-def test_update_summary_incorrect_url(test_app_with_db):
+def test_update_summary_incorrect_url(test_app_with_db, monkeypatch):
     # Given
-    summary_id = create_summary(test_app_with_db)
+    summary_id = create_summary(test_app_with_db, monkeypatch)
 
     # When
     response = test_app_with_db.put(
